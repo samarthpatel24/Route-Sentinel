@@ -6,7 +6,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python \"$CLAUDE_PROJECT_DIR/src/hook_handler.py\"",
+            "command": "python -m endpoint_auth_guard.hook_handler",
             "timeout": 30
           }
         ]

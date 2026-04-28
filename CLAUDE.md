@@ -1,12 +1,12 @@
-# FastAPI Security Audit Agent
+# Endpoint Auth Guard
 
-Scans FastAPI projects for endpoints missing authentication. Two-layer architecture: fast AST-based detection + optional LLM analysis via Anthropic API.
+Scans backend projects for endpoints missing authentication. Supports FastAPI, Flask, Django REST, Express.js, and Spring Boot. Two-layer architecture: fast AST/regex detection + optional LLM analysis via Anthropic API.
 
 ## Quick start
 
 ```bash
 pip install -r requirements.txt
-python -m src.cli scan <directory> --format console
+security-audit scan <directory> --format console
 ```
 
 ## Three enforcement points
@@ -19,19 +19,22 @@ python -m src.cli scan <directory> --format console
 
 ```bash
 # Console report
-python -m src.cli scan . --format console
+security-audit scan . --format console
 
 # JSON report
-python -m src.cli scan . --format json
+security-audit scan . --format json
 
 # GitHub Actions annotations
-python -m src.cli scan . --format github --exit-code --severity-threshold HIGH
+security-audit scan . --format github --exit-code --severity-threshold HIGH
 
 # Scan only staged files
-python -m src.cli scan . --git-diff --format console
+security-audit scan . --git-diff --format console
 
 # Skip LLM layer
-python -m src.cli scan . --no-llm --format console
+security-audit scan . --no-llm --format console
+
+# Set up Claude Code integration in a project
+security-audit init
 ```
 
 ## Tests

@@ -1,6 +1,6 @@
 from pathlib import Path
-from src.scanner import scan_file, scan_directory
-from src.config import AuditConfig
+from endpoint_auth_guard.scanner import scan_file, scan_directory
+from endpoint_auth_guard.config import AuditConfig
 
 FIXTURES = Path(__file__).parent / "fixtures"
 

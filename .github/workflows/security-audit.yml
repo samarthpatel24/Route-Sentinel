@@ -1,9 +1,13 @@
-name: FastAPI Security Audit
+name: Endpoint Auth Guard
 
 on:
   pull_request:
     paths:
       - "**/*.py"
+      - "**/*.js"
+      - "**/*.ts"
+      - "**/*.java"
+      - "**/*.kt"
 
 permissions:
   contents: read
@@ -19,12 +23,12 @@ jobs:
           python-version: "3.12"
           cache: pip
 
-      - name: Install dependencies
+      - name: Install endpoint-auth-guard
         run: pip install -r requirements.txt
 
       - name: Run security audit (regex layer)
         run: >
-          python -m src.cli scan .
+          security-audit scan .
           --format github
           --severity-threshold HIGH
           --exit-code
@@ -35,7 +39,7 @@ jobs:
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
         run: >
-          python -m src.cli scan .
+          security-audit scan .
           --format json
           --output security-report.json
           --severity-threshold HIGH

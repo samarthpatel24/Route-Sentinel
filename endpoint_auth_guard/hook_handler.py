@@ -15,13 +15,19 @@ def _is_git_commit(command: str) -> bool:
     return bool(re.search(r"\bgit\s+commit\b", command))
 
 
-def _get_staged_python_files() -> list[Path]:
+SCAN_EXTENSIONS = {".py", ".js", ".ts", ".mjs", ".cjs", ".java", ".kt"}
+
+
+def _get_staged_source_files() -> list[Path]:
     try:
         result = subprocess.run(
             ["git", "diff", "--cached", "--name-only", "--diff-filter=ACM"],
             capture_output=True, text=True, timeout=10,
         )
-        return [Path(f) for f in result.stdout.strip().splitlines() if f.endswith(".py")]
+        return [
+            Path(f) for f in result.stdout.strip().splitlines()
+            if Path(f).suffix.lower() in SCAN_EXTENSIONS
+        ]
     except (subprocess.SubprocessError, FileNotFoundError):
         return []
 
@@ -29,9 +35,8 @@ def _get_staged_python_files() -> list[Path]:
 def _is_route_file(path: Path) -> bool:
     try:
         content = path.read_text(encoding="utf-8")
-        return ("APIRouter" in content or "FastAPI" in content) and (
-            "@router." in content or "@app." in content
-        )
+        from .parsers import detect_framework
+        return detect_framework(content, path) is not None
     except (OSError, UnicodeDecodeError):
         return False
 
@@ -50,7 +55,7 @@ def main() -> None:
         print("{}")
         return
 
-    staged_files = _get_staged_python_files()
+    staged_files = _get_staged_source_files()
     route_files = [f for f in staged_files if f.exists() and _is_route_file(f)]
 
     if not route_files:
@@ -78,7 +83,7 @@ def main() -> None:
                 "hookEventName": "PreToolUse",
                 "permissionDecision": "deny",
                 "permissionDecisionReason": (
-                    "Security audit FAILED — unprotected FastAPI endpoints detected:\n\n"
+                    "Security audit FAILED -- unprotected endpoints detected:\n\n"
                     + summary
                 ),
             }

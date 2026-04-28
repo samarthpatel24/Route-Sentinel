@@ -2,9 +2,9 @@ import json
 from unittest.mock import patch, MagicMock
 from pathlib import Path
 
-from src.analyzer import analyze_file, analyze_results, SYSTEM_PROMPT
-from src.scanner import ScanResult, EndpointInfo, scan_file
-from src.config import AuditConfig
+from endpoint_auth_guard.analyzer import analyze_file, analyze_results, SYSTEM_PROMPT
+from endpoint_auth_guard.scanner import ScanResult, EndpointInfo, scan_file
+from endpoint_auth_guard.config import AuditConfig
 
 FIXTURES = Path(__file__).parent / "fixtures"
 
@@ -83,7 +83,7 @@ def test_analyze_file_detects_hidden_auth():
 
 
 @patch.dict("os.environ", {"ANTHROPIC_API_KEY": "test-key"})
-@patch("src.analyzer.anthropic.Anthropic")
+@patch("endpoint_auth_guard.analyzer.anthropic.Anthropic")
 def test_analyze_results_updates_endpoints(mock_client_cls):
     client_instance = MagicMock()
     mock_client_cls.return_value = client_instance
