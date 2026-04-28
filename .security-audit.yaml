@@ -1,0 +1,54 @@
+version: 1
+
+# Endpoints that are intentionally public (no auth required)
+allowlist:
+  - path: "/health"
+    reason: "Load balancer health check"
+  - path: "/docs"
+    reason: "OpenAPI documentation"
+  - path: "/openapi.json"
+    reason: "OpenAPI schema"
+  - path: "/redoc"
+    reason: "ReDoc documentation"
+  - path: "/auth/login"
+    reason: "Authentication endpoint"
+  - path: "/auth/register"
+    reason: "Registration endpoint"
+  - path: "/auth/token"
+    reason: "Token endpoint"
+
+# Patterns recognized as valid authentication
+auth_patterns:
+  - "get_current_user"
+  - "get_current_active_user"
+  - "require_roles"
+  - "require_admin"
+  - "verify_api_key"
+  - "get_api_key"
+  - "oauth2_scheme"
+  - "HTTPBearer"
+  - "HTTPBasic"
+  - "SecurityScopes"
+
+# Severity classification rules
+severity_rules:
+  critical_path_patterns:
+    - "/database"
+    - "/admin"
+    - "/users"
+    - "/credentials"
+    - "/sessions"
+    - "/api-keys"
+  high_path_patterns:
+    - "/data"
+    - "/export"
+    - "/import"
+    - "/delete"
+    - "/consent"
+    - "/data-rights"
+
+# LLM analysis settings
+analysis:
+  enabled: true
+  model: "claude-sonnet-4-6"
+  skip_if_all_protected: true

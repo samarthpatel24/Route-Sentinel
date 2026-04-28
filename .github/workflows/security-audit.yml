@@ -1,0 +1,50 @@
+name: FastAPI Security Audit
+
+on:
+  pull_request:
+    paths:
+      - "**/*.py"
+
+permissions:
+  contents: read
+
+jobs:
+  security-audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run security audit (regex layer)
+        run: >
+          python -m src.cli scan .
+          --format github
+          --severity-threshold HIGH
+          --exit-code
+          --no-llm
+
+      - name: Run security audit with LLM analysis
+        if: env.ANTHROPIC_API_KEY != ''
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: >
+          python -m src.cli scan .
+          --format json
+          --output security-report.json
+          --severity-threshold HIGH
+          --exit-code
+
+      - name: Upload report artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: security-audit-report
+          path: security-report.json
+          if-no-files-found: ignore
